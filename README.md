@@ -7,7 +7,7 @@ go-ui is a cross-platform golang ui tool kit, based on qt.
 ##System
 Windows / Linux / MacOS X
 
-##Build go-ui
+##Build go-ui and examples
 
 ###1.get go-ui
     $ go get github.com/visualfc/go-ui
@@ -18,6 +18,10 @@ Windows / Linux / MacOS X
 ###3.build go-ui
     $ cd go-ui/ui
     $ go install
+###4.build examples
+    $ cd go-ui/examples
+    $ go build -ldflags '-r ../lib' minimal.go
+    $ ./minimal
 
 ##Examples
 
