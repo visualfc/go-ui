@@ -14,11 +14,11 @@
 package ui
 
 func About() string {
-	return "vfc/ui 0.1 <visualfc@gmail.com>"
+	return "go-ui 0.1 <visualfc@gmail.com>"
 }
 
 func Version() string {
-	return "vfc/ui 0.1"
+	return "go-ui 0.1"
 }
 
 func Main(fn func()) int {

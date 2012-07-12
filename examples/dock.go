@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/visualfc/go-ui/ui"
 	"fmt"
+	"github.com/visualfc/go-ui/ui"
 	"runtime"
 	"time"
 )
@@ -25,7 +25,7 @@ func main_ui() {
 		dock := ui.NewDockWidgetWithTitle("Dock")
 		dock.SetDock(ui.NewButtonWithText("Hello"))
 		w.AddDockWidget(ui.LeftDockWidgetArea, dock)
-		btn := ui.NewButtonWithText("CloseDock测试")
+		btn := ui.NewButtonWithText("HideDock")
 		w.SetCentralWidget(btn)
 		w.SetSize(ui.Sz(200, 200))
 
@@ -43,7 +43,7 @@ func main_ui() {
 		})
 
 		btn.OnClicked(func() {
-			//dock.Close()
+			dock.Hide()
 			runtime.GC()
 			btn.SetText(btn.Text())
 		})
@@ -60,7 +60,7 @@ func main_ui() {
 					btn.SetText(btn.Text())
 					btn.SetText(btn.Text())
 					fmt.Println(">", btn.Text())
-					if btn.Text() != "CloseDock测试" {
+					if btn.Text() != "HideDock" {
 						panic("close")
 					}
 				}
