@@ -9,11 +9,13 @@ Windows / Linux / MacOS X
 
 ##Build go-ui
 
-###1.build qtdrv
+###1.get go-ui
+    $ go get github.com/visualfc/go-ui
+###2.build qtdrv, need install QtSDK
     $ cd go-ui/qtdrv
     $ qmake "CONFIG+=release"
     $ make
-###2.build go-ui
+###3.build go-ui
     $ cd go-ui/ui
     $ go install
 
