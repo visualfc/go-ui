@@ -2,10 +2,10 @@
 =====
 
 ###Introduction
-go-ui is a golang ui, base on qt, cross-platform ui tool kit.
+go-ui is a cross-platform golang ui tool kit, based on qt.
 
 ###System
-Windows / Linux x86 / Linux x86_64 / MacOS X 10.6
+Windows / Linux / MacOS X
 
 ###Examples
 
