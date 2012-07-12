@@ -17,7 +17,7 @@ func main() {
 }
 
 func main_ui() {
-	ui.OnInsertObject(func(item interface{}) {
+ui.OnInsertObject(func(item interface{}) {
 		fmt.Println("add item", item)
 	})
 	ui.OnRemoveObject(func(item interface{}) {

@@ -1,4 +1,4 @@
-#go-ui 0.1
+#go-ui 0.1.1
 =====
 
 ##Introduction
@@ -6,6 +6,10 @@ go-ui is a cross-platform golang ui tool kit, based on qt.
 
 ##System
 Windows / Linux / MacOS X
+
+##License
+    go-ui lib BSD
+    qtdrv lib LGPL
 
 ##Build go-ui and examples
 
