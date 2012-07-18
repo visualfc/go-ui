@@ -153,6 +153,8 @@ function make()
 	cdrv:write("\n")
 	cdrv:write(table.concat(c_def.drvfunc,"\n"))
 	cdrv:write("\n")
+	cdrv:write(table.concat(c_def._drvfunc,"\n"))
+	cdrv:write("\n")
 	cdrv:close()
 end
 

@@ -1,10 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"github.com/visualfc/go-ui/ui"
 )
 
-func main() {
+func main() {	
+	fmt.Println(ui.Version())
 	ui.Main(func() {
 		w := ui.NewWidget()
 		w.SetWindowTitle(ui.Version())

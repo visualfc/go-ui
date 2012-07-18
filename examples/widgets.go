@@ -175,22 +175,27 @@ func main() {
 }
 
 func ui_main() {
-	fmt.Println("vfc/ui")
-	ui.OnInsertObject(func(v interface{}) {
-		fmt.Println("add item", v)
-	})
-	ui.OnRemoveObject(func(v interface{}) {
-		fmt.Println("remove item", v)
-	})
-	w := new(MainWindow).Init()
-	defer w.Close()
+	exit := make(chan bool)
+	go func() {
+		fmt.Println("vfc/ui")
+		ui.OnInsertObject(func(v interface{}) {
+			fmt.Println("add item", v)
+		})
+		ui.OnRemoveObject(func(v interface{}) {
+			fmt.Println("remove item", v)
+		})
+		w := new(MainWindow).Init()
+		defer w.Close()
 
-	w.SetSizev(400, 300)
-	w.OnCloseEvent(func(e *ui.CloseEvent) {
-		fmt.Println("close", e)
-	})
-	w.Show()
+		w.SetSizev(400, 300)
+		w.OnCloseEvent(func(e *ui.CloseEvent) {
+			fmt.Println("close", e)
+		})
+		w.Show()
+		<- exit
+	}()
 	ui.Run()
+	exit <- true
 }
 
 type MyWidget struct {
@@ -213,6 +218,7 @@ func (p *MyWidget) Init() *MyWidget {
 		return nil
 	}
 	p.font = ui.NewFontWith("Timer", 16, 87)
+	p.font.SetItalic(true)
 	p.Widget.OnPaintEvent(func(e *ui.PaintEvent) {
 		p.paintEvent(e)
 	})
@@ -242,7 +248,7 @@ func (p *MyWidget) paintEvent(e *ui.PaintEvent) {
 	paint.SetFont(p.font)
 	paint.DrawLines(p.line)
 	paint.SetFont(p.font)
-	paint.DrawText(ui.Pt(100, 100), "this is a test")
+	paint.DrawText(ui.Pt(100, 100), "draw test")
 	for _, v := range p.lines {
 		//paint.DrawLines(v)
 		paint.DrawPolyline(v)

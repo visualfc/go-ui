@@ -120,6 +120,7 @@ function begin_def()
 	c_def.include = {}
 	c_def.drvenum = {}
 	c_def.drvfunc = {}
+	c_def._drvfunc = {}
 	c_def.enums = {}
 	c_def.funcs = {}
 	
@@ -166,7 +167,6 @@ func registerAllClass() {
 	c_def.drvenum[#c_def.drvenum+1] = "    DRVCLASS_NONE = 0,"
 
 	c_def.include[#c_def.include+1] = [[#include "cdrv.h"]]
-
 	c_def.drvfunc[#c_def.drvfunc+1] = [[
 typedef int (*DRV_CALLBACK)(void* fn, void *a1,void* a2,void* a3,void* a4);
 typedef int (*DRV_RESULT)(void* ch,int r);
@@ -212,9 +212,20 @@ int drv(int drvcls, int drvid, void *exp, void *a0, void* a1, void* a2, void* a3
         return 1;
 	case -4:
 		pfn_drv_appmain = (DRV_APPMAIN)exp;
-		return 1;
-    case _CLASSID_APP:
-        return drv_app(drvid,a0,a1,a2,a3,a4,a5,a6);
+		return 1;]]
+	c_def._drvfunc[#c_def._drvfunc+1] = [[
+int _drv(int drvcls, int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, void* a5, void* a6)
+{
+    switch(drvcls) {]]
+
+end
+
+function end_def()
+	go_def.drvenum[#go_def.drvenum+1] = ")"
+	go_def.newobj[#go_def.newobj+1] = "}"
+	c_def.drvenum[#c_def.drvenum+1] = "    DRVCLASS_LAST"
+	c_def.drvenum[#c_def.drvenum+1] = "};"
+	c_def.drvfunc[#c_def.drvfunc+1] = [[
     default:
         QMetaObject::invokeMethod(theApp,"drv",
                                   Q_ARG(int,drvcls),
@@ -230,20 +241,8 @@ int drv(int drvcls, int drvid, void *exp, void *a0, void* a1, void* a2, void* a3
         return 0;
     }
     return 1;
-}
-
-int _drv(int drvcls, int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, void* a5, void* a6)
-{
-    switch(drvcls) {]]
-
-end
-
-function end_def()
-	go_def.drvenum[#go_def.drvenum+1] = ")"
-	go_def.newobj[#go_def.newobj+1] = "}"
-	c_def.drvenum[#c_def.drvenum+1] = "    DRVCLASS_LAST"
-	c_def.drvenum[#c_def.drvenum+1] = "};"
-	c_def.drvfunc[#c_def.drvfunc+1] = [[
+}]]
+	c_def._drvfunc[#c_def._drvfunc+1] = [[
     default:
         return 0;
     }
@@ -695,7 +694,12 @@ func (p *%s) Attr(attr string) interface{} {
 }
 ]]
 	c_def.funcs[#c_def.funcs+1] = table.concat(c.funcs,"\n")
-	c_def.drvfunc[#c_def.drvfunc+1] = string.format([[
+	if item.sync then
+		c_def.drvfunc[#c_def.drvfunc+1] = string.format([[
+    case %s:
+        return drv_%s(drvid,a0,a1,a2,a3,a4,a5,a6);]],name_cls,string.lower(name))
+	end
+	c_def._drvfunc[#c_def._drvfunc+1] = string.format([[
     case %s:
         return drv_%s(drvid,a0,a1,a2,a3,a4,a5,a6);]],name_cls,string.lower(name))
 end

@@ -2,6 +2,7 @@ module("app")
 
 name = "app"
 base = "object"
+sync = true
 
 defs = [[
 ]]
