@@ -2876,7 +2876,7 @@ int drv_dialog(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, void
         break;
     }
     case _ID_DIALOG_ONACCEPTED: {
-        QObject::connect(self,SIGNAL(acceped()),drvNewSignal(self,a1,a2),SLOT(call()));
+        QObject::connect(self,SIGNAL(accepted()),drvNewSignal(self,a1,a2),SLOT(call()));
         break;
     }
     case _ID_DIALOG_ONREJECTED: {
