@@ -25,7 +25,8 @@ HEADERS += cdrv.h\
     qtsignal.h \
     qtevent.h \
     qtapp.h \
-    qtshell.h
+    qtshell.h \
+	gldrv.h
 
 IDE_BUILD_TREE = $$PWD
 IDE_LIB_PATH = $$IDE_BUILD_TREE/../lib
@@ -50,3 +51,5 @@ unix:!symbian {
     }
     INSTALLS += target
 }
+
+QT += opengl

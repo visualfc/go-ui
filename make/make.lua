@@ -62,6 +62,8 @@ require "ui.listwidget"
 
 require "ui.mainwindow"
 
+require "ui.glwidget"
+
 require "makelib"
 
 function make()
@@ -124,6 +126,8 @@ function make()
 		def(listwidget)
 		
 		def(mainwindow)
+		
+		def(glwidget)
 		
 	end_def()
 

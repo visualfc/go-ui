@@ -56,6 +56,7 @@ const (
 	CLASSID_LISTWIDGETITEM
 	CLASSID_LISTWIDGET
 	CLASSID_MAINWINDOW
+	CLASSID_GLWIDGET
 )
 // _CLASSID_APP drvid enums
 const (
@@ -826,6 +827,27 @@ const (
 	_ID_MAINWINDOW_ADDDOCKWIDGET
 	_ID_MAINWINDOW_REMOVEDOCKWIDGET
 )
+// CLASSID_GLWIDGET drvid enums
+const (
+	_ID_GLWIDGET_NONE = iota
+	_ID_GLWIDGET_INIT
+	_ID_GLWIDGET_DELETETEXTURE
+	_ID_GLWIDGET_DONECURRENT
+	_ID_GLWIDGET_DOUBLEBUFFER
+	_ID_GLWIDGET_CONVERTTOGLFORMAT
+	_ID_GLWIDGET_SETMOUSETRACKING
+	_ID_GLWIDGET_RENDERTEXT
+	_ID_GLWIDGET_ONUPDATEGL
+	_ID_GLWIDGET_ONUPDATEOVERLAYGL
+	_ID_GLWIDGET_ONGLDRAW
+	_ID_GLWIDGET_ONGLINIT
+	_ID_GLWIDGET_ONINITIALIZEGL
+	_ID_GLWIDGET_ONINITIALIZEOVERLAYGL
+	_ID_GLWIDGET_ONPAINTGL
+	_ID_GLWIDGET_ONPAINTOVERLAYGL
+	_ID_GLWIDGET_ONRESIZEGL
+	_ID_GLWIDGET_ONRESIZEOVERLAYGL
+)
 func registerAllClass() {
 	
 	RegisterClass("Timer",CLASSID_TIMER,func() IObject {
@@ -1214,6 +1236,16 @@ func registerAllClass() {
 	RegisterClassNative(CLASSID_MAINWINDOW,func(native uintptr) IObject {
 		obj := new(MainWindow)
 		obj.classid = CLASSID_MAINWINDOW
+		obj.native = native
+		InsertObject(obj)
+		return obj
+	})
+	RegisterClass("GLWidget",CLASSID_GLWIDGET,func() IObject {
+		return NewGLWidget()
+	})
+	RegisterClassNative(CLASSID_GLWIDGET,func(native uintptr) IObject {
+		obj := new(GLWidget)
+		obj.classid = CLASSID_GLWIDGET
 		obj.native = native
 		InsertObject(obj)
 		return obj
@@ -7811,6 +7843,136 @@ func (p *MainWindow) AddDockWidget(area DockWidgetArea,dock *DockWidget) {
 
 func (p *MainWindow) RemoveDockWidget(dock *DockWidget) {
 	_drv_ch(CLASSID_MAINWINDOW,_ID_MAINWINDOW_REMOVEDOCKWIDGET,unsafe.Pointer(p.info()),unsafe.Pointer(dock),nil,nil,nil,nil,nil,nil,nil,nil)
+	return
+}
+
+// struct GLWidget
+//
+type GLWidget struct {
+	Widget
+}
+
+func (p *GLWidget) Name() string {
+	return "GLWidget"
+}
+
+func (p *GLWidget) String() string {
+	return DumpObject(p)
+}
+func (p *GLWidget) SetAttr(attr string, value interface{}) bool {
+	switch attr {
+	default:
+		return p.Widget.SetAttr(attr,value)
+	}
+	return false
+}
+func (p *GLWidget) Attr(attr string) interface{} {
+	switch attr {
+	default:
+		return p.Widget.Attr(attr)
+	}
+	return nil
+}
+func NewGLWidget() *GLWidget{
+	return new(GLWidget).Init()
+}
+
+func (p *GLWidget) Init() *GLWidget {
+	p.classid = CLASSID_GLWIDGET
+	_drv_ch(CLASSID_GLWIDGET,_ID_GLWIDGET_INIT,unsafe.Pointer(p.info()),nil,nil,nil,nil,nil,nil,nil,nil,nil)
+	InsertObject(p)
+	return p
+}
+
+func (p *GLWidget) DeleteTexture(id uint) {
+	_drv_ch(CLASSID_GLWIDGET,_ID_GLWIDGET_DELETETEXTURE,unsafe.Pointer(p.info()),unsafe.Pointer(&id),nil,nil,nil,nil,nil,nil,nil,nil)
+	return
+}
+
+func (p *GLWidget) DoneCurrent() {
+	_drv_ch(CLASSID_GLWIDGET,_ID_GLWIDGET_DONECURRENT,unsafe.Pointer(p.info()),nil,nil,nil,nil,nil,nil,nil,nil,nil)
+	return
+}
+
+func (p *GLWidget) DoubleBuffer()(b bool) {
+	var b_b int
+	_drv_ch(CLASSID_GLWIDGET,_ID_GLWIDGET_DOUBLEBUFFER,unsafe.Pointer(p.info()),unsafe.Pointer(&b_b),nil,nil,nil,nil,nil,nil,nil,nil)
+	b = b_b != 0
+	return
+}
+
+func (p *GLWidget) ConvertToGLFormat(image *Image)(glImage *Image) {
+	var oi_glImage obj_info
+	_drv_ch(CLASSID_GLWIDGET,_ID_GLWIDGET_CONVERTTOGLFORMAT,unsafe.Pointer(p.info()),unsafe.Pointer(image),unsafe.Pointer(&oi_glImage),nil,nil,nil,nil,nil,nil,nil)
+	if oi_glImage.native != 0 {
+		v := FindObject(oi_glImage.native)
+		if v == nil {
+			v = NewObjectWithNative(CLASSID_IMAGE,oi_glImage.native)
+		}
+		if v != nil {
+			glImage = v.(*Image)
+		} 
+	}
+	return
+}
+
+func (p *GLWidget) SetMouseTracking(enable bool) {
+	_drv_ch(CLASSID_GLWIDGET,_ID_GLWIDGET_SETMOUSETRACKING,unsafe.Pointer(p.info()),unsafe.Pointer(&enable),nil,nil,nil,nil,nil,nil,nil,nil)
+	return
+}
+
+func (p *GLWidget) RenderText(x int,y int,z int,str string,font *Font) {
+	_drv_ch(CLASSID_GLWIDGET,_ID_GLWIDGET_RENDERTEXT,unsafe.Pointer(p.info()),unsafe.Pointer(&x),unsafe.Pointer(&y),unsafe.Pointer(&z),unsafe.Pointer((*string_info)(unsafe.Pointer(&str))),unsafe.Pointer(font),nil,nil,nil,nil)
+	return
+}
+
+func (p *GLWidget) OnUpdateGL(fn func()) {
+	_drv_event_ch(CLASSID_GLWIDGET,_ID_GLWIDGET_ONUPDATEGL,p,fn)
+	return
+}
+
+func (p *GLWidget) OnUpdateOverlayGL(fn func()) {
+	_drv_event_ch(CLASSID_GLWIDGET,_ID_GLWIDGET_ONUPDATEOVERLAYGL,p,fn)
+	return
+}
+
+func (p *GLWidget) OnGLDraw(fn func()) {
+	_drv_event_ch(CLASSID_GLWIDGET,_ID_GLWIDGET_ONGLDRAW,p,fn)
+	return
+}
+
+func (p *GLWidget) OnGLInit(fn func()) {
+	_drv_event_ch(CLASSID_GLWIDGET,_ID_GLWIDGET_ONGLINIT,p,fn)
+	return
+}
+
+func (p *GLWidget) OnInitializeGL(fn func()) {
+	_drv_event_ch(CLASSID_GLWIDGET,_ID_GLWIDGET_ONINITIALIZEGL,p,fn)
+	return
+}
+
+func (p *GLWidget) OnInitializeOverlayGL(fn func()) {
+	_drv_event_ch(CLASSID_GLWIDGET,_ID_GLWIDGET_ONINITIALIZEOVERLAYGL,p,fn)
+	return
+}
+
+func (p *GLWidget) OnPaintGL(fn func()) {
+	_drv_event_ch(CLASSID_GLWIDGET,_ID_GLWIDGET_ONPAINTGL,p,fn)
+	return
+}
+
+func (p *GLWidget) OnPaintOverlayGL(fn func()) {
+	_drv_event_ch(CLASSID_GLWIDGET,_ID_GLWIDGET_ONPAINTOVERLAYGL,p,fn)
+	return
+}
+
+func (p *GLWidget) OnResizeGL(fn func(int,int)) {
+	_drv_event_ch(CLASSID_GLWIDGET,_ID_GLWIDGET_ONRESIZEGL,p,fn)
+	return
+}
+
+func (p *GLWidget) OnResizeOverlayGL(fn func(int,int)) {
+	_drv_event_ch(CLASSID_GLWIDGET,_ID_GLWIDGET_ONRESIZEOVERLAYGL,p,fn)
 	return
 }
 

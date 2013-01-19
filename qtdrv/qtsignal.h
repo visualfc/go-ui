@@ -28,7 +28,8 @@ public:
 public slots:
     void call();
     void call(bool);
-    void call(int);
+	void call(int);
+    void call(int,int);
     void call(const QString&);
     void call(QAction*);
     void call(QListWidgetItem*);

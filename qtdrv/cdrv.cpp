@@ -55,6 +55,7 @@
 #include <QPainter>
 #include <QListWidget>
 #include <QMainWindow>
+#include "gldrv.h"
 // drvclass enums
 enum DRVCLASS_ENUM {
     DRVCLASS_NONE = 0,
@@ -101,6 +102,7 @@ enum DRVCLASS_ENUM {
     CLASSID_LISTWIDGETITEM,
     CLASSID_LISTWIDGET,
     CLASSID_MAINWINDOW,
+    CLASSID_GLWIDGET,
     DRVCLASS_LAST
 };
 // _CLASSID_APP drvid enums
@@ -914,6 +916,28 @@ enum DRVID_MAINWINDOW_ENUM {
     _ID_MAINWINDOW_ADDDOCKWIDGET,
     _ID_MAINWINDOW_REMOVEDOCKWIDGET,
     _ID_MAINWINDOW_LAST
+};
+// CLASSID_GLWIDGET drvid enums
+enum DRVID_GLWIDGET_ENUM {
+    _ID_GLWIDGET_NONE = 0,
+    _ID_GLWIDGET_INIT,
+    _ID_GLWIDGET_DELETETEXTURE,
+    _ID_GLWIDGET_DONECURRENT,
+    _ID_GLWIDGET_DOUBLEBUFFER,
+    _ID_GLWIDGET_CONVERTTOGLFORMAT,
+    _ID_GLWIDGET_SETMOUSETRACKING,
+    _ID_GLWIDGET_RENDERTEXT,
+    _ID_GLWIDGET_ONUPDATEGL,
+    _ID_GLWIDGET_ONUPDATEOVERLAYGL,
+    _ID_GLWIDGET_ONGLDRAW,
+    _ID_GLWIDGET_ONGLINIT,
+    _ID_GLWIDGET_ONINITIALIZEGL,
+    _ID_GLWIDGET_ONINITIALIZEOVERLAYGL,
+    _ID_GLWIDGET_ONPAINTGL,
+    _ID_GLWIDGET_ONPAINTOVERLAYGL,
+    _ID_GLWIDGET_ONRESIZEGL,
+    _ID_GLWIDGET_ONRESIZEOVERLAYGL,
+    _ID_GLWIDGET_LAST
 };
 int drv_app(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, void* a5, void* a6)
 {
@@ -3768,6 +3792,84 @@ int drv_mainwindow(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, 
     return 1;
 }
 
+int drv_glwidget(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, void* a5, void* a6)
+{
+    QGLWidget *self = (QGLWidget*)drvGetNative(a0);
+    switch (drvid) {
+    case _ID_GLWIDGET_INIT: {
+        drvNewObj(a0,new QGLWidgetCustom);
+        break;
+    }
+    case _ID_GLWIDGET_DELETETEXTURE: {
+        self->deleteTexture(drvGetUint(a1));
+        break;
+    }
+    case _ID_GLWIDGET_DONECURRENT: {
+        self->doneCurrent();
+        break;
+    }
+    case _ID_GLWIDGET_DOUBLEBUFFER: {
+        drvSetBool(a1,self->doubleBuffer());
+        break;
+    }
+    case _ID_GLWIDGET_CONVERTTOGLFORMAT: {
+        drvSetImage(a2,self->convertToGLFormat(drvGetImage(a1)));
+        break;
+    }
+    case _ID_GLWIDGET_SETMOUSETRACKING: {
+        self->setMouseTracking(drvGetBool(a1));
+        break;
+    }
+    case _ID_GLWIDGET_RENDERTEXT: {
+        self->renderText(drvGetInt(a1),drvGetInt(a2),drvGetInt(a3),drvGetString(a4),drvGetFont(a5));
+        break;
+    }
+    case _ID_GLWIDGET_ONUPDATEGL: {
+        	QObject::connect(self,SIGNAL(updateGL()),drvNewSignal(self,a1,a2),SLOT(call()));
+        break;
+    }
+    case _ID_GLWIDGET_ONUPDATEOVERLAYGL: {
+        	QObject::connect(self,SIGNAL(updateOverlayGL()),drvNewSignal(self,a1,a2),SLOT(call()));
+        break;
+    }
+    case _ID_GLWIDGET_ONGLDRAW: {
+        	QObject::connect(self,SIGNAL(glDraw()),drvNewSignal(self,a1,a2),SLOT(call()));
+        break;
+    }
+    case _ID_GLWIDGET_ONGLINIT: {
+        	QObject::connect(self,SIGNAL(glInit()),drvNewSignal(self,a1,a2),SLOT(call()));
+        break;
+    }
+    case _ID_GLWIDGET_ONINITIALIZEGL: {
+        	QObject::connect(self,SIGNAL(initializeGLSignal()),drvNewSignal(self,a1,a2),SLOT(call()));
+        break;
+    }
+    case _ID_GLWIDGET_ONINITIALIZEOVERLAYGL: {
+        	QObject::connect(self,SIGNAL(initializeOverlayGL()),drvNewSignal(self,a1,a2),SLOT(call()));
+        break;
+    }
+    case _ID_GLWIDGET_ONPAINTGL: {
+        	QObject::connect(self,SIGNAL(paintGLSignal()),drvNewSignal(self,a1,a2),SLOT(call()));
+        break;
+    }
+    case _ID_GLWIDGET_ONPAINTOVERLAYGL: {
+        	QObject::connect(self,SIGNAL(paintOverlayGL()),drvNewSignal(self,a1,a2),SLOT(call()));
+        break;
+    }
+    case _ID_GLWIDGET_ONRESIZEGL: {
+        	QObject::connect(self,SIGNAL(resizeGLSignal(int,int)),drvNewSignal(self,a1,a2),SLOT(call(int,int)));
+        break;
+    }
+    case _ID_GLWIDGET_ONRESIZEOVERLAYGL: {
+        	QObject::connect(self,SIGNAL(resizeOverlayGLSignal(int,int)),drvNewSignal(self,a1,a2),SLOT(call(int,int)));
+        break;
+    }
+    default:
+        return 0;
+    }
+    return 1;
+}
+
 typedef int (*DRV_CALLBACK)(void* fn, void *a1,void* a2,void* a3,void* a4);
 typedef int (*DRV_RESULT)(void* ch,int r);
 typedef int (*DRV_APPMAIN)();
@@ -3920,6 +4022,8 @@ int _drv(int drvcls, int drvid, void *a0, void* a1, void* a2, void* a3, void* a4
         return drv_listwidget(drvid,a0,a1,a2,a3,a4,a5,a6);
     case CLASSID_MAINWINDOW:
         return drv_mainwindow(drvid,a0,a1,a2,a3,a4,a5,a6);
+    case CLASSID_GLWIDGET:
+        return drv_glwidget(drvid,a0,a1,a2,a3,a4,a5,a6);
     default:
         return 0;
     }

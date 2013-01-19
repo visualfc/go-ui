@@ -679,3 +679,13 @@ extern "C"
 int QTDRVSHARED_EXPORT drv(int drvclass, int drvid, void *exp, void *a0, void* a1, void* a2, void* a3, void* a4, void* a5, void* a6);
 
 int _drv(int drvclass, int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, void* a5, void* a6);
+
+inline Qt::AspectRatioMode drvGetAspectRatioMode(void *param)
+{
+	return (Qt::AspectRatioMode)(*(int*)param);
+}
+
+inline Qt::TransformationMode drvGetTransformationMode(void *param)
+{
+	return (Qt::TransformationMode)(*(int*)param);
+}
