@@ -190,6 +190,15 @@ enum DRVID_PIXMAP_ENUM {
     _ID_PIXMAP_HASALPHA,
     _ID_PIXMAP_HASALPHACHANNEL,
     _ID_PIXMAP_ISNULL,
+    _ID_PIXMAP_WIDTH,
+    _ID_PIXMAP_HEIGHT,
+    _ID_PIXMAP_SCALED,
+    _ID_PIXMAP_SCALEDTOHEIGHT,
+    _ID_PIXMAP_SCALEDTOWIDTH,
+    _ID_PIXMAP_TOIMAGE,
+    _ID_PIXMAP_LOAD,
+    _ID_PIXMAP_SAVE,
+    _ID_PIXMAP_FILL,
     _ID_PIXMAP_LAST
 };
 // CLASSID_ICON drvid enums
@@ -212,6 +221,7 @@ enum DRVID_IMAGE_ENUM {
     _ID_IMAGE_SIZE,
     _ID_IMAGE_RECT,
     _ID_IMAGE_FILL,
+    _ID_IMAGE_SCALED,
     _ID_IMAGE_LAST
 };
 // CLASSID_WIDGET drvid enums
@@ -1222,6 +1232,42 @@ int drv_pixmap(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, void
         drvSetBool(a1,self->isNull());
         break;
     }
+    case _ID_PIXMAP_WIDTH: {
+        drvSetInt(a1,self->width());
+        break;
+    }
+    case _ID_PIXMAP_HEIGHT: {
+        drvSetInt(a1,self->height());
+        break;
+    }
+    case _ID_PIXMAP_SCALED: {
+        drvSetPixmap(a5,self->scaled(drvGetInt(a1),drvGetInt(a2),drvGetAspectRatioMode(a3),drvGetTransformationMode(a4)));
+        break;
+    }
+    case _ID_PIXMAP_SCALEDTOHEIGHT: {
+        drvSetPixmap(a3,self->scaledToHeight(drvGetInt(a1),drvGetTransformationMode(a2)));
+        break;
+    }
+    case _ID_PIXMAP_SCALEDTOWIDTH: {
+        drvSetPixmap(a3,self->scaledToWidth(drvGetInt(a1),drvGetTransformationMode(a2)));
+        break;
+    }
+    case _ID_PIXMAP_TOIMAGE: {
+        drvSetImage(a1,self->toImage());
+        break;
+    }
+    case _ID_PIXMAP_LOAD: {
+        	drvSetBool(a1, self->load(drvGetString(a0)));
+        break;
+    }
+    case _ID_PIXMAP_SAVE: {
+        	drvSetBool(a3, self->save(drvGetString(a1), 0, drvGetInt(a2)));
+        break;
+    }
+    case _ID_PIXMAP_FILL: {
+        self->fill(drvGetColor(a1));
+        break;
+    }
     default:
         return 0;
     }
@@ -1288,6 +1334,10 @@ int drv_image(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, void*
     }
     case _ID_IMAGE_FILL: {
         self->fill(drvGetUint(a1));
+        break;
+    }
+    case _ID_IMAGE_SCALED: {
+        drvSetImage(a5,self->scaled(drvGetInt(a1),drvGetInt(a2),drvGetAspectRatioMode(a3),drvGetTransformationMode(a4)));
         break;
     }
     default:

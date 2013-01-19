@@ -12,7 +12,7 @@ funcs = [[
 @ Size() (sz Size)
 @ Rect() (rc Rect)
 Fill(color uint)
-
+Scaled(width int, height int, aspectRatioMode AspectRatioMode, transformMode TransformationMode) (image *Image)
 ]]
 
 
@@ -37,4 +37,5 @@ Depth = "depth",
 Size = "size",
 Rect = "rect",
 Fill = "fill",
+Scaled = "scaled",
 }

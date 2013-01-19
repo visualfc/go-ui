@@ -141,6 +141,15 @@ const (
 	_ID_PIXMAP_HASALPHA
 	_ID_PIXMAP_HASALPHACHANNEL
 	_ID_PIXMAP_ISNULL
+	_ID_PIXMAP_WIDTH
+	_ID_PIXMAP_HEIGHT
+	_ID_PIXMAP_SCALED
+	_ID_PIXMAP_SCALEDTOHEIGHT
+	_ID_PIXMAP_SCALEDTOWIDTH
+	_ID_PIXMAP_TOIMAGE
+	_ID_PIXMAP_LOAD
+	_ID_PIXMAP_SAVE
+	_ID_PIXMAP_FILL
 )
 // CLASSID_ICON drvid enums
 const (
@@ -161,6 +170,7 @@ const (
 	_ID_IMAGE_SIZE
 	_ID_IMAGE_RECT
 	_ID_IMAGE_FILL
+	_ID_IMAGE_SCALED
 )
 // CLASSID_WIDGET drvid enums
 const (
@@ -1863,6 +1873,10 @@ func (p *Pixmap) Attr(attr string) interface{} {
 		return p.HasAlphaChannel()
 	case "null":
 		return p.IsNull()
+	case "width":
+		return p.Width()
+	case "height":
+		return p.Height()
 	default:
 		return p.object.Attr(attr)
 	}
@@ -1955,6 +1969,96 @@ func (p *Pixmap) IsNull()(b bool) {
 	var b_b int
 	_drv_ch(CLASSID_PIXMAP,_ID_PIXMAP_ISNULL,unsafe.Pointer(p.info()),unsafe.Pointer(&b_b),nil,nil,nil,nil,nil,nil,nil,nil)
 	b = b_b != 0
+	return
+}
+
+func (p *Pixmap) Width()(width int) {
+	_drv_ch(CLASSID_PIXMAP,_ID_PIXMAP_WIDTH,unsafe.Pointer(p.info()),unsafe.Pointer(&width),nil,nil,nil,nil,nil,nil,nil,nil)
+	return
+}
+
+func (p *Pixmap) Height()(height int) {
+	_drv_ch(CLASSID_PIXMAP,_ID_PIXMAP_HEIGHT,unsafe.Pointer(p.info()),unsafe.Pointer(&height),nil,nil,nil,nil,nil,nil,nil,nil)
+	return
+}
+
+func (p *Pixmap) Scaled(width int,height int,aspectRatioMode AspectRatioMode,transformMode TransformationMode)(pixmap *Pixmap) {
+	var oi_pixmap obj_info
+	_drv_ch(CLASSID_PIXMAP,_ID_PIXMAP_SCALED,unsafe.Pointer(p.info()),unsafe.Pointer(&width),unsafe.Pointer(&height),unsafe.Pointer(&aspectRatioMode),unsafe.Pointer(&transformMode),unsafe.Pointer(&oi_pixmap),nil,nil,nil,nil)
+	if oi_pixmap.native != 0 {
+		v := FindObject(oi_pixmap.native)
+		if v == nil {
+			v = NewObjectWithNative(CLASSID_PIXMAP,oi_pixmap.native)
+		}
+		if v != nil {
+			pixmap = v.(*Pixmap)
+		} 
+	}
+	return
+}
+
+func (p *Pixmap) ScaledToHeight(height int,transformMode TransformationMode)(pixmap *Pixmap) {
+	var oi_pixmap obj_info
+	_drv_ch(CLASSID_PIXMAP,_ID_PIXMAP_SCALEDTOHEIGHT,unsafe.Pointer(p.info()),unsafe.Pointer(&height),unsafe.Pointer(&transformMode),unsafe.Pointer(&oi_pixmap),nil,nil,nil,nil,nil,nil)
+	if oi_pixmap.native != 0 {
+		v := FindObject(oi_pixmap.native)
+		if v == nil {
+			v = NewObjectWithNative(CLASSID_PIXMAP,oi_pixmap.native)
+		}
+		if v != nil {
+			pixmap = v.(*Pixmap)
+		} 
+	}
+	return
+}
+
+func (p *Pixmap) ScaledToWidth(width int,transformMode TransformationMode)(pixmap *Pixmap) {
+	var oi_pixmap obj_info
+	_drv_ch(CLASSID_PIXMAP,_ID_PIXMAP_SCALEDTOWIDTH,unsafe.Pointer(p.info()),unsafe.Pointer(&width),unsafe.Pointer(&transformMode),unsafe.Pointer(&oi_pixmap),nil,nil,nil,nil,nil,nil)
+	if oi_pixmap.native != 0 {
+		v := FindObject(oi_pixmap.native)
+		if v == nil {
+			v = NewObjectWithNative(CLASSID_PIXMAP,oi_pixmap.native)
+		}
+		if v != nil {
+			pixmap = v.(*Pixmap)
+		} 
+	}
+	return
+}
+
+func (p *Pixmap) ToImage()(image *Image) {
+	var oi_image obj_info
+	_drv_ch(CLASSID_PIXMAP,_ID_PIXMAP_TOIMAGE,unsafe.Pointer(p.info()),unsafe.Pointer(&oi_image),nil,nil,nil,nil,nil,nil,nil,nil)
+	if oi_image.native != 0 {
+		v := FindObject(oi_image.native)
+		if v == nil {
+			v = NewObjectWithNative(CLASSID_IMAGE,oi_image.native)
+		}
+		if v != nil {
+			image = v.(*Image)
+		} 
+	}
+	return
+}
+
+func (p *Pixmap) Load(fileName string)(b bool) {
+	var b_b int
+	_drv_ch(CLASSID_PIXMAP,_ID_PIXMAP_LOAD,unsafe.Pointer(p.info()),unsafe.Pointer((*string_info)(unsafe.Pointer(&fileName))),unsafe.Pointer(&b_b),nil,nil,nil,nil,nil,nil,nil)
+	b = b_b != 0
+	return
+}
+
+func (p *Pixmap) Save(fileName string,quality int)(b bool) {
+	var b_b int
+	_drv_ch(CLASSID_PIXMAP,_ID_PIXMAP_SAVE,unsafe.Pointer(p.info()),unsafe.Pointer((*string_info)(unsafe.Pointer(&fileName))),unsafe.Pointer(&quality),unsafe.Pointer(&b_b),nil,nil,nil,nil,nil,nil)
+	b = b_b != 0
+	return
+}
+
+func (p *Pixmap) Fill(clr color.Color) {
+	sh_clr := make_rgba(clr)
+	_drv_ch(CLASSID_PIXMAP,_ID_PIXMAP_FILL,unsafe.Pointer(p.info()),unsafe.Pointer(&sh_clr),nil,nil,nil,nil,nil,nil,nil,nil)
 	return
 }
 
@@ -2121,6 +2225,21 @@ func (p *Image) Rect()(rc Rect) {
 
 func (p *Image) Fill(color uint) {
 	_drv_ch(CLASSID_IMAGE,_ID_IMAGE_FILL,unsafe.Pointer(p.info()),unsafe.Pointer(&color),nil,nil,nil,nil,nil,nil,nil,nil)
+	return
+}
+
+func (p *Image) Scaled(width int,height int,aspectRatioMode AspectRatioMode,transformMode TransformationMode)(image *Image) {
+	var oi_image obj_info
+	_drv_ch(CLASSID_IMAGE,_ID_IMAGE_SCALED,unsafe.Pointer(p.info()),unsafe.Pointer(&width),unsafe.Pointer(&height),unsafe.Pointer(&aspectRatioMode),unsafe.Pointer(&transformMode),unsafe.Pointer(&oi_image),nil,nil,nil,nil)
+	if oi_image.native != 0 {
+		v := FindObject(oi_image.native)
+		if v == nil {
+			v = NewObjectWithNative(CLASSID_IMAGE,oi_image.native)
+		}
+		if v != nil {
+			image = v.(*Image)
+		} 
+	}
 	return
 }
 
