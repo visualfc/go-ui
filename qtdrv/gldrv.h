@@ -9,15 +9,30 @@ protected slots:
 	}
 	
 	void resizeGL(int w, int h) {
-		emit resizeGLSignal(w, h);
+		emit resizeGLSignal(w,h);
 	}
 	
 	void paintGL() {
 		emit paintGLSignal();
 	}
+	
+	void initializeOverlayGL() {
+		emit initializeOverlayGLSignal();
+	}
+	
+	void resizeOverlayGL(int w, int h) {
+		emit resizeOverlayGLSignal(w,h);
+	}
+	
+	void paintOverlayGL() {
+		emit paintOverlayGLSignal();
+	}
 
 signals:
 	void initializeGLSignal();
-	void resizeGLSignal(int w, int h);
+	void resizeGLSignal(int,int);
 	void paintGLSignal();
+	void initializeOverlayGLSignal();
+	void resizeOverlayGLSignal(int,int);
+	void paintOverlayGLSignal();
 };

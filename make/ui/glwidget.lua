@@ -11,10 +11,8 @@ DoubleBuffer() (b bool)
 ConvertToGLFormat(image *Image) (glImage *Image)
 SetMouseTracking(enable bool)
 RenderText(x int, y int, z int, str string, font *Font)
-* OnUpdateGL(fn func())
-* OnUpdateOverlayGL(fn func())
-* OnGLDraw(fn func())
-* OnGLInit(fn func())
+UpdateGL()
+UpdateOverlayGL()
 * OnInitializeGL(fn func())
 * OnInitializeOverlayGL(fn func())
 * OnPaintGL(fn func())
@@ -25,7 +23,7 @@ RenderText(x int, y int, z int, str string, font *Font)
 
 qtdrv = {
 inc = "\"gldrv.h\"",	
-name = "QGLWidget *",
+name = "QGLWidgetCustom *",
 
 Init = [[
 drvNewObj(a0,new QGLWidgetCustom);
@@ -37,32 +35,24 @@ DoubleBuffer = "doubleBuffer",
 ConvertToGLFormat = "convertToGLFormat",
 SetMouseTracking = "setMouseTracking",
 RenderText = "renderText",
-OnUpdateGL = [[
-	QObject::connect(self,SIGNAL(updateGL()),drvNewSignal(self,a1,a2),SLOT(call()));
-]],
-OnUpdateOverlayGL = [[
-	QObject::connect(self,SIGNAL(updateOverlayGL()),drvNewSignal(self,a1,a2),SLOT(call()));
-]],
-OnGLDraw = [[
-	QObject::connect(self,SIGNAL(glDraw()),drvNewSignal(self,a1,a2),SLOT(call()));
-]],
-OnGLInit = [[
-	QObject::connect(self,SIGNAL(glInit()),drvNewSignal(self,a1,a2),SLOT(call()));
-]],
+UpdateGL = "updateGL",
+UpdateOverlayGL = "updateOverlayGL",
+
 OnInitializeGL = [[
 	QObject::connect(self,SIGNAL(initializeGLSignal()),drvNewSignal(self,a1,a2),SLOT(call()));
-]],
-OnInitializeOverlayGL = [[
-	QObject::connect(self,SIGNAL(initializeOverlayGL()),drvNewSignal(self,a1,a2),SLOT(call()));
 ]],
 OnPaintGL = [[
 	QObject::connect(self,SIGNAL(paintGLSignal()),drvNewSignal(self,a1,a2),SLOT(call()));
 ]],
-OnPaintOverlayGL = [[
-	QObject::connect(self,SIGNAL(paintOverlayGL()),drvNewSignal(self,a1,a2),SLOT(call()));
-]],
 OnResizeGL = [[
 	QObject::connect(self,SIGNAL(resizeGLSignal(int,int)),drvNewSignal(self,a1,a2),SLOT(call(int,int)));
+]],
+
+OnInitializeOverlayGL = [[
+	QObject::connect(self,SIGNAL(initializeOverlayGLSignal()),drvNewSignal(self,a1,a2),SLOT(call()));
+]],
+OnPaintOverlayGL = [[
+	QObject::connect(self,SIGNAL(paintOverlayGLSignal()),drvNewSignal(self,a1,a2),SLOT(call()));
 ]],
 OnResizeOverlayGL = [[
 	QObject::connect(self,SIGNAL(resizeOverlayGLSignal(int,int)),drvNewSignal(self,a1,a2),SLOT(call(int,int)));
