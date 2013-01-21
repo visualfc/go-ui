@@ -837,10 +837,8 @@ const (
 	_ID_GLWIDGET_CONVERTTOGLFORMAT
 	_ID_GLWIDGET_SETMOUSETRACKING
 	_ID_GLWIDGET_RENDERTEXT
-	_ID_GLWIDGET_ONUPDATEGL
-	_ID_GLWIDGET_ONUPDATEOVERLAYGL
-	_ID_GLWIDGET_ONGLDRAW
-	_ID_GLWIDGET_ONGLINIT
+	_ID_GLWIDGET_UPDATEGL
+	_ID_GLWIDGET_UPDATEOVERLAYGL
 	_ID_GLWIDGET_ONINITIALIZEGL
 	_ID_GLWIDGET_ONINITIALIZEOVERLAYGL
 	_ID_GLWIDGET_ONPAINTGL
@@ -7926,23 +7924,13 @@ func (p *GLWidget) RenderText(x int,y int,z int,str string,font *Font) {
 	return
 }
 
-func (p *GLWidget) OnUpdateGL(fn func()) {
-	_drv_event_ch(CLASSID_GLWIDGET,_ID_GLWIDGET_ONUPDATEGL,p,fn)
+func (p *GLWidget) UpdateGL() {
+	_drv_ch(CLASSID_GLWIDGET,_ID_GLWIDGET_UPDATEGL,unsafe.Pointer(p.info()),nil,nil,nil,nil,nil,nil,nil,nil,nil)
 	return
 }
 
-func (p *GLWidget) OnUpdateOverlayGL(fn func()) {
-	_drv_event_ch(CLASSID_GLWIDGET,_ID_GLWIDGET_ONUPDATEOVERLAYGL,p,fn)
-	return
-}
-
-func (p *GLWidget) OnGLDraw(fn func()) {
-	_drv_event_ch(CLASSID_GLWIDGET,_ID_GLWIDGET_ONGLDRAW,p,fn)
-	return
-}
-
-func (p *GLWidget) OnGLInit(fn func()) {
-	_drv_event_ch(CLASSID_GLWIDGET,_ID_GLWIDGET_ONGLINIT,p,fn)
+func (p *GLWidget) UpdateOverlayGL() {
+	_drv_ch(CLASSID_GLWIDGET,_ID_GLWIDGET_UPDATEOVERLAYGL,unsafe.Pointer(p.info()),nil,nil,nil,nil,nil,nil,nil,nil,nil)
 	return
 }
 

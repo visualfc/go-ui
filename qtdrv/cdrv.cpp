@@ -927,10 +927,8 @@ enum DRVID_GLWIDGET_ENUM {
     _ID_GLWIDGET_CONVERTTOGLFORMAT,
     _ID_GLWIDGET_SETMOUSETRACKING,
     _ID_GLWIDGET_RENDERTEXT,
-    _ID_GLWIDGET_ONUPDATEGL,
-    _ID_GLWIDGET_ONUPDATEOVERLAYGL,
-    _ID_GLWIDGET_ONGLDRAW,
-    _ID_GLWIDGET_ONGLINIT,
+    _ID_GLWIDGET_UPDATEGL,
+    _ID_GLWIDGET_UPDATEOVERLAYGL,
     _ID_GLWIDGET_ONINITIALIZEGL,
     _ID_GLWIDGET_ONINITIALIZEOVERLAYGL,
     _ID_GLWIDGET_ONPAINTGL,
@@ -3794,7 +3792,7 @@ int drv_mainwindow(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, 
 
 int drv_glwidget(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, void* a5, void* a6)
 {
-    QGLWidget *self = (QGLWidget*)drvGetNative(a0);
+    QGLWidgetCustom *self = (QGLWidgetCustom*)drvGetNative(a0);
     switch (drvid) {
     case _ID_GLWIDGET_INIT: {
         drvNewObj(a0,new QGLWidgetCustom);
@@ -3824,20 +3822,12 @@ int drv_glwidget(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, vo
         self->renderText(drvGetInt(a1),drvGetInt(a2),drvGetInt(a3),drvGetString(a4),drvGetFont(a5));
         break;
     }
-    case _ID_GLWIDGET_ONUPDATEGL: {
-        	QObject::connect(self,SIGNAL(updateGL()),drvNewSignal(self,a1,a2),SLOT(call()));
+    case _ID_GLWIDGET_UPDATEGL: {
+        self->updateGL();
         break;
     }
-    case _ID_GLWIDGET_ONUPDATEOVERLAYGL: {
-        	QObject::connect(self,SIGNAL(updateOverlayGL()),drvNewSignal(self,a1,a2),SLOT(call()));
-        break;
-    }
-    case _ID_GLWIDGET_ONGLDRAW: {
-        	QObject::connect(self,SIGNAL(glDraw()),drvNewSignal(self,a1,a2),SLOT(call()));
-        break;
-    }
-    case _ID_GLWIDGET_ONGLINIT: {
-        	QObject::connect(self,SIGNAL(glInit()),drvNewSignal(self,a1,a2),SLOT(call()));
+    case _ID_GLWIDGET_UPDATEOVERLAYGL: {
+        self->updateOverlayGL();
         break;
     }
     case _ID_GLWIDGET_ONINITIALIZEGL: {
@@ -3845,7 +3835,7 @@ int drv_glwidget(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, vo
         break;
     }
     case _ID_GLWIDGET_ONINITIALIZEOVERLAYGL: {
-        	QObject::connect(self,SIGNAL(initializeOverlayGL()),drvNewSignal(self,a1,a2),SLOT(call()));
+        	QObject::connect(self,SIGNAL(initializeOverlayGLSignal()),drvNewSignal(self,a1,a2),SLOT(call()));
         break;
     }
     case _ID_GLWIDGET_ONPAINTGL: {
@@ -3853,7 +3843,7 @@ int drv_glwidget(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, vo
         break;
     }
     case _ID_GLWIDGET_ONPAINTOVERLAYGL: {
-        	QObject::connect(self,SIGNAL(paintOverlayGL()),drvNewSignal(self,a1,a2),SLOT(call()));
+        	QObject::connect(self,SIGNAL(paintOverlayGLSignal()),drvNewSignal(self,a1,a2),SLOT(call()));
         break;
     }
     case _ID_GLWIDGET_ONRESIZEGL: {
