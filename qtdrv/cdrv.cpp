@@ -56,6 +56,9 @@
 #include <QListWidget>
 #include <QMainWindow>
 #include "gldrv.h"
+#include <QSizePolicy>
+#include <QAbstractScrollArea>
+#include <QScrollArea>
 // drvclass enums
 enum DRVCLASS_ENUM {
     DRVCLASS_NONE = 0,
@@ -103,6 +106,9 @@ enum DRVCLASS_ENUM {
     CLASSID_LISTWIDGET,
     CLASSID_MAINWINDOW,
     CLASSID_GLWIDGET,
+    CLASSID_SIZEPOLICY,
+    _CLASSID_BASESCROLLAREA,
+    CLASSID_SCROLLAREA,
     DRVCLASS_LAST
 };
 // _CLASSID_APP drvid enums
@@ -262,6 +268,8 @@ enum DRVID_WIDGET_ENUM {
     _ID_WIDGET_UPDATESENABLED,
     _ID_WIDGET_ISACTIVATEWINDOW,
     _ID_WIDGET_ACTIVATEWINDOW,
+    _ID_WIDGET_SETSIZEPOLICY,
+    _ID_WIDGET_SIZEPOLICY,
     _ID_WIDGET_DONE,
     _ID_WIDGET_UPDATE,
     _ID_WIDGET_REPAINT,
@@ -633,6 +641,16 @@ enum DRVID_LABEL_ENUM {
     _ID_LABEL_TEXTFORMAT,
     _ID_LABEL_SETPIXMAP,
     _ID_LABEL_PIXMAP,
+    _ID_LABEL_SETSCALEDCONTENTS,
+    _ID_LABEL_HASSCALEDCONTENTS,
+    _ID_LABEL_SETOPENEXTERNALLINKS,
+    _ID_LABEL_OPENEXTERNALLINKS,
+    _ID_LABEL_SETALIGNMENT,
+    _ID_LABEL_ALIGNMENT,
+    _ID_LABEL_SETINDENT,
+    _ID_LABEL_INDENT,
+    _ID_LABEL_SETMARGIN,
+    _ID_LABEL_MARGIN,
     _ID_LABEL_ONLINKACTIVATED,
     _ID_LABEL_LAST
 };
@@ -936,6 +954,44 @@ enum DRVID_GLWIDGET_ENUM {
     _ID_GLWIDGET_ONRESIZEGL,
     _ID_GLWIDGET_ONRESIZEOVERLAYGL,
     _ID_GLWIDGET_LAST
+};
+// CLASSID_SIZEPOLICY drvid enums
+enum DRVID_SIZEPOLICY_ENUM {
+    _ID_SIZEPOLICY_NONE = 0,
+    _ID_SIZEPOLICY_INIT,
+    _ID_SIZEPOLICY_INITWITHPOLICY,
+    _ID_SIZEPOLICY_CLOSE,
+    _ID_SIZEPOLICY_HORIZONTALPOLICY,
+    _ID_SIZEPOLICY_SETHORIZONTALPOLICY,
+    _ID_SIZEPOLICY_VERTICALPOLICY,
+    _ID_SIZEPOLICY_SETVERTICALPOLICY,
+    _ID_SIZEPOLICY_HASHEIGHTFORWIDTH,
+    _ID_SIZEPOLICY_TRANSPOSE,
+    _ID_SIZEPOLICY_LAST
+};
+// _CLASSID_BASESCROLLAREA drvid enums
+enum DRVID_BASESCROLLAREA_ENUM {
+    _ID_BASESCROLLAREA_NONE = 0,
+    _ID_BASESCROLLAREA_CORNERWIDGET,
+    _ID_BASESCROLLAREA_HORIZONTALSCROLLBAR,
+    _ID_BASESCROLLAREA_VERTICALSCROLLBAR,
+    _ID_BASESCROLLAREA_VIEWPORT,
+    _ID_BASESCROLLAREA_LAST
+};
+// CLASSID_SCROLLAREA drvid enums
+enum DRVID_SCROLLAREA_ENUM {
+    _ID_SCROLLAREA_NONE = 0,
+    _ID_SCROLLAREA_INIT,
+    _ID_SCROLLAREA_SETALIGNMENT,
+    _ID_SCROLLAREA_ALIGNMENT,
+    _ID_SCROLLAREA_SETWIDGET,
+    _ID_SCROLLAREA_WIDGET,
+    _ID_SCROLLAREA_SETWIDGETRESIZABLE,
+    _ID_SCROLLAREA_WIDGETRESIZABLE,
+    _ID_SCROLLAREA_TAKEWIDGET,
+    _ID_SCROLLAREA_ENSUREVISIBLE,
+    _ID_SCROLLAREA_ENSUREWIDGETVISIBLE,
+    _ID_SCROLLAREA_LAST
 };
 int drv_app(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, void* a5, void* a6)
 {
@@ -1507,6 +1563,14 @@ int drv_widget(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, void
     }
     case _ID_WIDGET_ACTIVATEWINDOW: {
         self->activateWindow();
+        break;
+    }
+    case _ID_WIDGET_SETSIZEPOLICY: {
+        self->setSizePolicy(drvGetSizePolicy(a1));
+        break;
+    }
+    case _ID_WIDGET_SIZEPOLICY: {
+        drvSetSizePolicy(a1,self->sizePolicy());
         break;
     }
     case _ID_WIDGET_DONE: {
@@ -2793,6 +2857,46 @@ int drv_label(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, void*
         drvSetPixmap(a1,self->pixmap());
         break;
     }
+    case _ID_LABEL_SETSCALEDCONTENTS: {
+        self->setScaledContents(drvGetBool(a1));
+        break;
+    }
+    case _ID_LABEL_HASSCALEDCONTENTS: {
+        drvSetBool(a1,self->hasScaledContents());
+        break;
+    }
+    case _ID_LABEL_SETOPENEXTERNALLINKS: {
+        self->setOpenExternalLinks(drvGetBool(a1));
+        break;
+    }
+    case _ID_LABEL_OPENEXTERNALLINKS: {
+        drvSetBool(a1,self->openExternalLinks());
+        break;
+    }
+    case _ID_LABEL_SETALIGNMENT: {
+        self->setAlignment(drvGetAlignment(a1));
+        break;
+    }
+    case _ID_LABEL_ALIGNMENT: {
+        drvSetAlignment(a1,self->alignment());
+        break;
+    }
+    case _ID_LABEL_SETINDENT: {
+        self->setIndent(drvGetInt(a1));
+        break;
+    }
+    case _ID_LABEL_INDENT: {
+        drvSetInt(a1,self->indent());
+        break;
+    }
+    case _ID_LABEL_SETMARGIN: {
+        self->setMargin(drvGetInt(a1));
+        break;
+    }
+    case _ID_LABEL_MARGIN: {
+        drvSetInt(a1,self->margin());
+        break;
+    }
     case _ID_LABEL_ONLINKACTIVATED: {
         QObject::connect(self,SIGNAL(linkActivated(QString)),drvNewSignal(self,a1,a2),SLOT(call(QString)));
         break;
@@ -2874,7 +2978,7 @@ int drv_dialog(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, void
         break;
     }
     case _ID_DIALOG_ONACCEPTED: {
-        QObject::connect(self,SIGNAL(accepted()),drvNewSignal(self,a1,a2),SLOT(call()));
+        QObject::connect(self,SIGNAL(acceped()),drvNewSignal(self,a1,a2),SLOT(call()));
         break;
     }
     case _ID_DIALOG_ONREJECTED: {
@@ -3860,6 +3964,128 @@ int drv_glwidget(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, vo
     return 1;
 }
 
+int drv_sizepolicy(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, void* a5, void* a6)
+{
+    QSizePolicy *self = (QSizePolicy*)drvGetNative(a0);
+    switch (drvid) {
+    case _ID_SIZEPOLICY_INIT: {
+        drvNewObj(a0, new QSizePolicy());
+        break;
+    }
+    case _ID_SIZEPOLICY_INITWITHPOLICY: {
+        drvNewObj(a0, new QSizePolicy(drvGetSizePolicyPolicy(a1),drvGetSizePolicyPolicy(a2),drvGetSizePolicyControlType(a3)));
+        break;
+    }
+    case _ID_SIZEPOLICY_CLOSE: {
+        drvDelObj(a0,self);
+        break;
+    }
+    case _ID_SIZEPOLICY_HORIZONTALPOLICY: {
+        drvSetSizePolicyPolicy(a1,self->horizontalPolicy());
+        break;
+    }
+    case _ID_SIZEPOLICY_SETHORIZONTALPOLICY: {
+        self->setHorizontalPolicy(drvGetSizePolicyPolicy(a1));
+        break;
+    }
+    case _ID_SIZEPOLICY_VERTICALPOLICY: {
+        drvSetSizePolicyPolicy(a1,self->verticalPolicy());
+        break;
+    }
+    case _ID_SIZEPOLICY_SETVERTICALPOLICY: {
+        self->setVerticalPolicy(drvGetSizePolicyPolicy(a1));
+        break;
+    }
+    case _ID_SIZEPOLICY_HASHEIGHTFORWIDTH: {
+        drvSetBool(a1,self->hasHeightForWidth());
+        break;
+    }
+    case _ID_SIZEPOLICY_TRANSPOSE: {
+        self->transpose();
+        break;
+    }
+    default:
+        return 0;
+    }
+    return 1;
+}
+
+int drv_basescrollarea(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, void* a5, void* a6)
+{
+    QAbstractScrollArea *self = (QAbstractScrollArea*)drvGetNative(a0);
+    switch (drvid) {
+    case _ID_BASESCROLLAREA_CORNERWIDGET: {
+        drvSetHandle(a1,self->cornerWidget());
+        break;
+    }
+    case _ID_BASESCROLLAREA_HORIZONTALSCROLLBAR: {
+        drvSetScrollBar(a1,self->horizontalScrollBar());
+        break;
+    }
+    case _ID_BASESCROLLAREA_VERTICALSCROLLBAR: {
+        drvSetScrollBar(a1,self->verticalScrollBar());
+        break;
+    }
+    case _ID_BASESCROLLAREA_VIEWPORT: {
+        drvSetHandle(a1,self->viewport());
+        break;
+    }
+    default:
+        return 0;
+    }
+    return 1;
+}
+
+int drv_scrollarea(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, void* a5, void* a6)
+{
+    QScrollArea *self = (QScrollArea*)drvGetNative(a0);
+    switch (drvid) {
+    case _ID_SCROLLAREA_INIT: {
+        drvNewObj(a0,new QScrollArea());
+        break;
+    }
+    case _ID_SCROLLAREA_SETALIGNMENT: {
+        self->setAlignment(drvGetAlignment(a1));
+        break;
+    }
+    case _ID_SCROLLAREA_ALIGNMENT: {
+        drvSetAlignment(a1,self->alignment());
+        break;
+    }
+    case _ID_SCROLLAREA_SETWIDGET: {
+        self->setWidget(drvGetWidget(a1));
+        break;
+    }
+    case _ID_SCROLLAREA_WIDGET: {
+        drvSetHandle(a1,self->widget());
+        break;
+    }
+    case _ID_SCROLLAREA_SETWIDGETRESIZABLE: {
+        self->setWidgetResizable(drvGetBool(a1));
+        break;
+    }
+    case _ID_SCROLLAREA_WIDGETRESIZABLE: {
+        drvSetBool(a1,self->widgetResizable());
+        break;
+    }
+    case _ID_SCROLLAREA_TAKEWIDGET: {
+        drvSetHandle(a1,self->takeWidget());
+        break;
+    }
+    case _ID_SCROLLAREA_ENSUREVISIBLE: {
+        self->ensureVisible(drvGetInt(a1),drvGetInt(a2),drvGetInt(a3),drvGetInt(a4));
+        break;
+    }
+    case _ID_SCROLLAREA_ENSUREWIDGETVISIBLE: {
+        self->ensureWidgetVisible(drvGetWidget(a1),drvGetInt(a2),drvGetInt(a3));
+        break;
+    }
+    default:
+        return 0;
+    }
+    return 1;
+}
+
 typedef int (*DRV_CALLBACK)(void* fn, void *a1,void* a2,void* a3,void* a4);
 typedef int (*DRV_RESULT)(void* ch,int r);
 typedef int (*DRV_APPMAIN)();
@@ -4014,6 +4240,12 @@ int _drv(int drvcls, int drvid, void *a0, void* a1, void* a2, void* a3, void* a4
         return drv_mainwindow(drvid,a0,a1,a2,a3,a4,a5,a6);
     case CLASSID_GLWIDGET:
         return drv_glwidget(drvid,a0,a1,a2,a3,a4,a5,a6);
+    case CLASSID_SIZEPOLICY:
+        return drv_sizepolicy(drvid,a0,a1,a2,a3,a4,a5,a6);
+    case _CLASSID_BASESCROLLAREA:
+        return drv_basescrollarea(drvid,a0,a1,a2,a3,a4,a5,a6);
+    case CLASSID_SCROLLAREA:
+        return drv_scrollarea(drvid,a0,a1,a2,a3,a4,a5,a6);
     default:
         return 0;
     }

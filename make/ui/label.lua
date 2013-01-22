@@ -15,6 +15,16 @@ funcs = [[
 @ TextFormat() (format int)
 @ SetPixmap(pixmap *Pixmap)
 @ Pixmap() (pixmap *Pixmap)
+@ SetScaledContents(b bool)
+@ HasScaledContents() (b bool)
+@ SetOpenExternalLinks(b bool)
+@ OpenExternalLinks() (b bool)
+@ SetAlignment(a Alignment)
+@ Alignment() (a Alignment)
+@ SetIndent(i int)
+@ Indent() (i int)
+@ SetMargin(i int)
+@ Margin() (i int)
 * OnLinkActivated(fn func(string))
 ]]
 
@@ -47,6 +57,16 @@ drvSetInt(a1,self->textFormat());
 ]],
 SetPixmap = "setPixmap",
 Pixmap = "pixmap",
+SetScaledContents = "setScaledContents",
+HasScaledContents = "hasScaledContents",
+SetOpenExternalLinks = "setOpenExternalLinks",
+OpenExternalLinks = "openExternalLinks",
+SetAlignment = "setAlignment",
+Alignment = "alignment",
+SetIndent = "setIndent",
+Indent = "indent",
+SetMargin = "setMargin",
+Margin = "margin",
 
 OnLinkActivated = [[
 QObject::connect(self,SIGNAL(linkActivated(QString)),drvNewSignal(self,a1,a2),SLOT(call(QString)));

@@ -31,6 +31,7 @@
 #include <QPen>
 #include <QBrush>
 #include <QDebug>
+#include <QSizePolicy>
 
 class QDockWidget;
 class QToolBar;
@@ -688,4 +689,68 @@ inline Qt::AspectRatioMode drvGetAspectRatioMode(void *param)
 inline Qt::TransformationMode drvGetTransformationMode(void *param)
 {
 	return (Qt::TransformationMode)(*(int*)param);
+}
+
+inline QSizePolicy::Policy drvGetSizePolicyPolicy(void *param)
+{
+	if (param == 0) {
+		return QSizePolicy::Fixed;
+	}
+
+	return (QSizePolicy::Policy)(*(int*)param);
+}
+
+inline void drvSetSizePolicyPolicy(void *param, QSizePolicy::Policy policy)
+{
+	if (param == 0) {
+		return;
+	}
+
+	(*(int*)param) = (int)policy;
+}
+
+inline QSizePolicy::ControlType drvGetSizePolicyControlType(void *param)
+{
+	if (param == 0) {
+		return QSizePolicy::DefaultType;
+	}
+
+	return (QSizePolicy::ControlType)(*(int*)param);
+}
+
+inline void drvSetSizePolicyControlType(void *param, QSizePolicy::ControlType control)
+{
+	if (param == 0) {
+		return;
+	}
+
+	(*(int*)param) = (int)control;
+}
+
+inline void drvSetSizePolicy(void *param, const QSizePolicy &p) // FIXME
+{
+	QSizePolicy* policy = (QSizePolicy*)drvGetNative(param);
+	if (policy == 0) {
+		drvSetHandle(param, new QSizePolicy(p));
+		return;
+	}
+	*policy = p;
+}
+
+inline QSizePolicy drvGetSizePolicy(void *param) // FIXME
+{
+	QSizePolicy* policy = (QSizePolicy*)drvGetNative(param);
+	if (policy == 0) {
+		return QSizePolicy();
+	}
+
+    return QSizePolicy(*policy);
+}
+
+inline void drvSetScrollBar(void *param, const QScrollBar *scrollbar)
+{
+    if (scrollbar == 0) {
+        return;
+    }
+    drvSetHandle(param,(void*)scrollbar);
 }
