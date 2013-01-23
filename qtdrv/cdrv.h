@@ -31,6 +31,7 @@
 #include <QPen>
 #include <QBrush>
 #include <QDebug>
+#include <QSizePolicy>
 
 class QDockWidget;
 class QToolBar;
@@ -597,15 +598,20 @@ inline void drvNewObj(void *a0, void *obj)
 template <typename T>
 inline void drvDelObj(void *a0, T *obj)
 {
-    if (a0 == 0 || obj == 0) {
+	if (obj != 0) {
+		delete obj;
+		obj = 0;
+	}
+
+    if (a0 == 0) {
         return;
     }
+    
     handle_head *head =(handle_head*)a0;
     if (head->native == 0 || head->native == drvInvalid) {
         return;
     }
     head->native = 0;
-    delete obj;
 }
 
 inline void drvDelFont(void *a0, QFont *font)
@@ -679,3 +685,77 @@ extern "C"
 int QTDRVSHARED_EXPORT drv(int drvclass, int drvid, void *exp, void *a0, void* a1, void* a2, void* a3, void* a4, void* a5, void* a6);
 
 int _drv(int drvclass, int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, void* a5, void* a6);
+
+inline Qt::AspectRatioMode drvGetAspectRatioMode(void *param)
+{
+	return (Qt::AspectRatioMode)(*(int*)param);
+}
+
+inline Qt::TransformationMode drvGetTransformationMode(void *param)
+{
+	return (Qt::TransformationMode)(*(int*)param);
+}
+
+inline QSizePolicy::Policy drvGetSizePolicyPolicy(void *param)
+{
+	if (param == 0) {
+		return QSizePolicy::Fixed;
+	}
+
+	return (QSizePolicy::Policy)(*(int*)param);
+}
+
+inline void drvSetSizePolicyPolicy(void *param, QSizePolicy::Policy policy)
+{
+	if (param == 0) {
+		return;
+	}
+
+	(*(int*)param) = (int)policy;
+}
+
+inline QSizePolicy::ControlType drvGetSizePolicyControlType(void *param)
+{
+	if (param == 0) {
+		return QSizePolicy::DefaultType;
+	}
+
+	return (QSizePolicy::ControlType)(*(int*)param);
+}
+
+inline void drvSetSizePolicyControlType(void *param, QSizePolicy::ControlType control)
+{
+	if (param == 0) {
+		return;
+	}
+
+	(*(int*)param) = (int)control;
+}
+
+inline void drvSetSizePolicy(void *param, const QSizePolicy &p) // FIXME
+{
+	QSizePolicy* policy = (QSizePolicy*)drvGetNative(param);
+	if (policy == 0) {
+		drvSetHandle(param, new QSizePolicy(p));
+		return;
+	}
+	*policy = p;
+}
+
+inline QSizePolicy drvGetSizePolicy(void *param) // FIXME
+{
+	QSizePolicy* policy = (QSizePolicy*)drvGetNative(param);
+	if (policy == 0) {
+		return QSizePolicy();
+	}
+
+    return QSizePolicy(*policy);
+}
+
+inline void drvSetScrollBar(void *param, const QScrollBar *scrollbar)
+{
+    if (scrollbar == 0) {
+        return;
+    }
+    drvSetHandle(param,(void*)scrollbar);
+}

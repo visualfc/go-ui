@@ -55,6 +55,10 @@
 #include <QPainter>
 #include <QListWidget>
 #include <QMainWindow>
+#include "gldrv.h"
+#include <QSizePolicy>
+#include <QAbstractScrollArea>
+#include <QScrollArea>
 // drvclass enums
 enum DRVCLASS_ENUM {
     DRVCLASS_NONE = 0,
@@ -101,6 +105,10 @@ enum DRVCLASS_ENUM {
     CLASSID_LISTWIDGETITEM,
     CLASSID_LISTWIDGET,
     CLASSID_MAINWINDOW,
+    CLASSID_GLWIDGET,
+    CLASSID_SIZEPOLICY,
+    _CLASSID_BASESCROLLAREA,
+    CLASSID_SCROLLAREA,
     DRVCLASS_LAST
 };
 // _CLASSID_APP drvid enums
@@ -190,6 +198,15 @@ enum DRVID_PIXMAP_ENUM {
     _ID_PIXMAP_HASALPHA,
     _ID_PIXMAP_HASALPHACHANNEL,
     _ID_PIXMAP_ISNULL,
+    _ID_PIXMAP_WIDTH,
+    _ID_PIXMAP_HEIGHT,
+    _ID_PIXMAP_SCALED,
+    _ID_PIXMAP_SCALEDTOHEIGHT,
+    _ID_PIXMAP_SCALEDTOWIDTH,
+    _ID_PIXMAP_TOIMAGE,
+    _ID_PIXMAP_LOAD,
+    _ID_PIXMAP_SAVE,
+    _ID_PIXMAP_FILL,
     _ID_PIXMAP_LAST
 };
 // CLASSID_ICON drvid enums
@@ -212,6 +229,7 @@ enum DRVID_IMAGE_ENUM {
     _ID_IMAGE_SIZE,
     _ID_IMAGE_RECT,
     _ID_IMAGE_FILL,
+    _ID_IMAGE_SCALED,
     _ID_IMAGE_LAST
 };
 // CLASSID_WIDGET drvid enums
@@ -250,6 +268,8 @@ enum DRVID_WIDGET_ENUM {
     _ID_WIDGET_UPDATESENABLED,
     _ID_WIDGET_ISACTIVATEWINDOW,
     _ID_WIDGET_ACTIVATEWINDOW,
+    _ID_WIDGET_SETSIZEPOLICY,
+    _ID_WIDGET_SIZEPOLICY,
     _ID_WIDGET_DONE,
     _ID_WIDGET_UPDATE,
     _ID_WIDGET_REPAINT,
@@ -621,6 +641,16 @@ enum DRVID_LABEL_ENUM {
     _ID_LABEL_TEXTFORMAT,
     _ID_LABEL_SETPIXMAP,
     _ID_LABEL_PIXMAP,
+    _ID_LABEL_SETSCALEDCONTENTS,
+    _ID_LABEL_HASSCALEDCONTENTS,
+    _ID_LABEL_SETOPENEXTERNALLINKS,
+    _ID_LABEL_OPENEXTERNALLINKS,
+    _ID_LABEL_SETALIGNMENT,
+    _ID_LABEL_ALIGNMENT,
+    _ID_LABEL_SETINDENT,
+    _ID_LABEL_INDENT,
+    _ID_LABEL_SETMARGIN,
+    _ID_LABEL_MARGIN,
     _ID_LABEL_ONLINKACTIVATED,
     _ID_LABEL_LAST
 };
@@ -904,6 +934,64 @@ enum DRVID_MAINWINDOW_ENUM {
     _ID_MAINWINDOW_ADDDOCKWIDGET,
     _ID_MAINWINDOW_REMOVEDOCKWIDGET,
     _ID_MAINWINDOW_LAST
+};
+// CLASSID_GLWIDGET drvid enums
+enum DRVID_GLWIDGET_ENUM {
+    _ID_GLWIDGET_NONE = 0,
+    _ID_GLWIDGET_INIT,
+    _ID_GLWIDGET_DELETETEXTURE,
+    _ID_GLWIDGET_DONECURRENT,
+    _ID_GLWIDGET_DOUBLEBUFFER,
+    _ID_GLWIDGET_CONVERTTOGLFORMAT,
+    _ID_GLWIDGET_SETMOUSETRACKING,
+    _ID_GLWIDGET_RENDERTEXT,
+    _ID_GLWIDGET_UPDATEGL,
+    _ID_GLWIDGET_UPDATEOVERLAYGL,
+    _ID_GLWIDGET_ONINITIALIZEGL,
+    _ID_GLWIDGET_ONINITIALIZEOVERLAYGL,
+    _ID_GLWIDGET_ONPAINTGL,
+    _ID_GLWIDGET_ONPAINTOVERLAYGL,
+    _ID_GLWIDGET_ONRESIZEGL,
+    _ID_GLWIDGET_ONRESIZEOVERLAYGL,
+    _ID_GLWIDGET_LAST
+};
+// CLASSID_SIZEPOLICY drvid enums
+enum DRVID_SIZEPOLICY_ENUM {
+    _ID_SIZEPOLICY_NONE = 0,
+    _ID_SIZEPOLICY_INIT,
+    _ID_SIZEPOLICY_INITWITHPOLICY,
+    _ID_SIZEPOLICY_CLOSE,
+    _ID_SIZEPOLICY_HORIZONTALPOLICY,
+    _ID_SIZEPOLICY_SETHORIZONTALPOLICY,
+    _ID_SIZEPOLICY_VERTICALPOLICY,
+    _ID_SIZEPOLICY_SETVERTICALPOLICY,
+    _ID_SIZEPOLICY_HASHEIGHTFORWIDTH,
+    _ID_SIZEPOLICY_TRANSPOSE,
+    _ID_SIZEPOLICY_LAST
+};
+// _CLASSID_BASESCROLLAREA drvid enums
+enum DRVID_BASESCROLLAREA_ENUM {
+    _ID_BASESCROLLAREA_NONE = 0,
+    _ID_BASESCROLLAREA_CORNERWIDGET,
+    _ID_BASESCROLLAREA_HORIZONTALSCROLLBAR,
+    _ID_BASESCROLLAREA_VERTICALSCROLLBAR,
+    _ID_BASESCROLLAREA_VIEWPORT,
+    _ID_BASESCROLLAREA_LAST
+};
+// CLASSID_SCROLLAREA drvid enums
+enum DRVID_SCROLLAREA_ENUM {
+    _ID_SCROLLAREA_NONE = 0,
+    _ID_SCROLLAREA_INIT,
+    _ID_SCROLLAREA_SETALIGNMENT,
+    _ID_SCROLLAREA_ALIGNMENT,
+    _ID_SCROLLAREA_SETWIDGET,
+    _ID_SCROLLAREA_WIDGET,
+    _ID_SCROLLAREA_SETWIDGETRESIZABLE,
+    _ID_SCROLLAREA_WIDGETRESIZABLE,
+    _ID_SCROLLAREA_TAKEWIDGET,
+    _ID_SCROLLAREA_ENSUREVISIBLE,
+    _ID_SCROLLAREA_ENSUREWIDGETVISIBLE,
+    _ID_SCROLLAREA_LAST
 };
 int drv_app(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, void* a5, void* a6)
 {
@@ -1222,6 +1310,42 @@ int drv_pixmap(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, void
         drvSetBool(a1,self->isNull());
         break;
     }
+    case _ID_PIXMAP_WIDTH: {
+        drvSetInt(a1,self->width());
+        break;
+    }
+    case _ID_PIXMAP_HEIGHT: {
+        drvSetInt(a1,self->height());
+        break;
+    }
+    case _ID_PIXMAP_SCALED: {
+        drvSetPixmap(a5,self->scaled(drvGetInt(a1),drvGetInt(a2),drvGetAspectRatioMode(a3),drvGetTransformationMode(a4)));
+        break;
+    }
+    case _ID_PIXMAP_SCALEDTOHEIGHT: {
+        drvSetPixmap(a3,self->scaledToHeight(drvGetInt(a1),drvGetTransformationMode(a2)));
+        break;
+    }
+    case _ID_PIXMAP_SCALEDTOWIDTH: {
+        drvSetPixmap(a3,self->scaledToWidth(drvGetInt(a1),drvGetTransformationMode(a2)));
+        break;
+    }
+    case _ID_PIXMAP_TOIMAGE: {
+        drvSetImage(a1,self->toImage());
+        break;
+    }
+    case _ID_PIXMAP_LOAD: {
+        	drvSetBool(a1, self->load(drvGetString(a0)));
+        break;
+    }
+    case _ID_PIXMAP_SAVE: {
+        	drvSetBool(a3, self->save(drvGetString(a1), 0, drvGetInt(a2)));
+        break;
+    }
+    case _ID_PIXMAP_FILL: {
+        self->fill(drvGetColor(a1));
+        break;
+    }
     default:
         return 0;
     }
@@ -1288,6 +1412,10 @@ int drv_image(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, void*
     }
     case _ID_IMAGE_FILL: {
         self->fill(drvGetUint(a1));
+        break;
+    }
+    case _ID_IMAGE_SCALED: {
+        drvSetImage(a5,self->scaled(drvGetInt(a1),drvGetInt(a2),drvGetAspectRatioMode(a3),drvGetTransformationMode(a4)));
         break;
     }
     default:
@@ -1435,6 +1563,14 @@ int drv_widget(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, void
     }
     case _ID_WIDGET_ACTIVATEWINDOW: {
         self->activateWindow();
+        break;
+    }
+    case _ID_WIDGET_SETSIZEPOLICY: {
+        self->setSizePolicy(drvGetSizePolicy(a1));
+        break;
+    }
+    case _ID_WIDGET_SIZEPOLICY: {
+        drvSetSizePolicy(a1,self->sizePolicy());
         break;
     }
     case _ID_WIDGET_DONE: {
@@ -2721,6 +2857,46 @@ int drv_label(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, void*
         drvSetPixmap(a1,self->pixmap());
         break;
     }
+    case _ID_LABEL_SETSCALEDCONTENTS: {
+        self->setScaledContents(drvGetBool(a1));
+        break;
+    }
+    case _ID_LABEL_HASSCALEDCONTENTS: {
+        drvSetBool(a1,self->hasScaledContents());
+        break;
+    }
+    case _ID_LABEL_SETOPENEXTERNALLINKS: {
+        self->setOpenExternalLinks(drvGetBool(a1));
+        break;
+    }
+    case _ID_LABEL_OPENEXTERNALLINKS: {
+        drvSetBool(a1,self->openExternalLinks());
+        break;
+    }
+    case _ID_LABEL_SETALIGNMENT: {
+        self->setAlignment(drvGetAlignment(a1));
+        break;
+    }
+    case _ID_LABEL_ALIGNMENT: {
+        drvSetAlignment(a1,self->alignment());
+        break;
+    }
+    case _ID_LABEL_SETINDENT: {
+        self->setIndent(drvGetInt(a1));
+        break;
+    }
+    case _ID_LABEL_INDENT: {
+        drvSetInt(a1,self->indent());
+        break;
+    }
+    case _ID_LABEL_SETMARGIN: {
+        self->setMargin(drvGetInt(a1));
+        break;
+    }
+    case _ID_LABEL_MARGIN: {
+        drvSetInt(a1,self->margin());
+        break;
+    }
     case _ID_LABEL_ONLINKACTIVATED: {
         QObject::connect(self,SIGNAL(linkActivated(QString)),drvNewSignal(self,a1,a2),SLOT(call(QString)));
         break;
@@ -3718,6 +3894,198 @@ int drv_mainwindow(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, 
     return 1;
 }
 
+int drv_glwidget(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, void* a5, void* a6)
+{
+    QGLWidgetCustom *self = (QGLWidgetCustom*)drvGetNative(a0);
+    switch (drvid) {
+    case _ID_GLWIDGET_INIT: {
+        drvNewObj(a0,new QGLWidgetCustom);
+        break;
+    }
+    case _ID_GLWIDGET_DELETETEXTURE: {
+        self->deleteTexture(drvGetUint(a1));
+        break;
+    }
+    case _ID_GLWIDGET_DONECURRENT: {
+        self->doneCurrent();
+        break;
+    }
+    case _ID_GLWIDGET_DOUBLEBUFFER: {
+        drvSetBool(a1,self->doubleBuffer());
+        break;
+    }
+    case _ID_GLWIDGET_CONVERTTOGLFORMAT: {
+        drvSetImage(a2,self->convertToGLFormat(drvGetImage(a1)));
+        break;
+    }
+    case _ID_GLWIDGET_SETMOUSETRACKING: {
+        self->setMouseTracking(drvGetBool(a1));
+        break;
+    }
+    case _ID_GLWIDGET_RENDERTEXT: {
+        self->renderText(drvGetInt(a1),drvGetInt(a2),drvGetInt(a3),drvGetString(a4),drvGetFont(a5));
+        break;
+    }
+    case _ID_GLWIDGET_UPDATEGL: {
+        self->updateGL();
+        break;
+    }
+    case _ID_GLWIDGET_UPDATEOVERLAYGL: {
+        self->updateOverlayGL();
+        break;
+    }
+    case _ID_GLWIDGET_ONINITIALIZEGL: {
+        	QObject::connect(self,SIGNAL(initializeGLSignal()),drvNewSignal(self,a1,a2),SLOT(call()));
+        break;
+    }
+    case _ID_GLWIDGET_ONINITIALIZEOVERLAYGL: {
+        	QObject::connect(self,SIGNAL(initializeOverlayGLSignal()),drvNewSignal(self,a1,a2),SLOT(call()));
+        break;
+    }
+    case _ID_GLWIDGET_ONPAINTGL: {
+        	QObject::connect(self,SIGNAL(paintGLSignal()),drvNewSignal(self,a1,a2),SLOT(call()));
+        break;
+    }
+    case _ID_GLWIDGET_ONPAINTOVERLAYGL: {
+        	QObject::connect(self,SIGNAL(paintOverlayGLSignal()),drvNewSignal(self,a1,a2),SLOT(call()));
+        break;
+    }
+    case _ID_GLWIDGET_ONRESIZEGL: {
+        	QObject::connect(self,SIGNAL(resizeGLSignal(int,int)),drvNewSignal(self,a1,a2),SLOT(call(int,int)));
+        break;
+    }
+    case _ID_GLWIDGET_ONRESIZEOVERLAYGL: {
+        	QObject::connect(self,SIGNAL(resizeOverlayGLSignal(int,int)),drvNewSignal(self,a1,a2),SLOT(call(int,int)));
+        break;
+    }
+    default:
+        return 0;
+    }
+    return 1;
+}
+
+int drv_sizepolicy(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, void* a5, void* a6)
+{
+    QSizePolicy *self = (QSizePolicy*)drvGetNative(a0);
+    switch (drvid) {
+    case _ID_SIZEPOLICY_INIT: {
+        drvNewObj(a0, new QSizePolicy());
+        break;
+    }
+    case _ID_SIZEPOLICY_INITWITHPOLICY: {
+        drvNewObj(a0, new QSizePolicy(drvGetSizePolicyPolicy(a1),drvGetSizePolicyPolicy(a2),drvGetSizePolicyControlType(a3)));
+        break;
+    }
+    case _ID_SIZEPOLICY_CLOSE: {
+        drvDelObj(a0,self);
+        break;
+    }
+    case _ID_SIZEPOLICY_HORIZONTALPOLICY: {
+        drvSetSizePolicyPolicy(a1,self->horizontalPolicy());
+        break;
+    }
+    case _ID_SIZEPOLICY_SETHORIZONTALPOLICY: {
+        self->setHorizontalPolicy(drvGetSizePolicyPolicy(a1));
+        break;
+    }
+    case _ID_SIZEPOLICY_VERTICALPOLICY: {
+        drvSetSizePolicyPolicy(a1,self->verticalPolicy());
+        break;
+    }
+    case _ID_SIZEPOLICY_SETVERTICALPOLICY: {
+        self->setVerticalPolicy(drvGetSizePolicyPolicy(a1));
+        break;
+    }
+    case _ID_SIZEPOLICY_HASHEIGHTFORWIDTH: {
+        drvSetBool(a1,self->hasHeightForWidth());
+        break;
+    }
+    case _ID_SIZEPOLICY_TRANSPOSE: {
+        self->transpose();
+        break;
+    }
+    default:
+        return 0;
+    }
+    return 1;
+}
+
+int drv_basescrollarea(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, void* a5, void* a6)
+{
+    QAbstractScrollArea *self = (QAbstractScrollArea*)drvGetNative(a0);
+    switch (drvid) {
+    case _ID_BASESCROLLAREA_CORNERWIDGET: {
+        drvSetHandle(a1,self->cornerWidget());
+        break;
+    }
+    case _ID_BASESCROLLAREA_HORIZONTALSCROLLBAR: {
+        drvSetScrollBar(a1,self->horizontalScrollBar());
+        break;
+    }
+    case _ID_BASESCROLLAREA_VERTICALSCROLLBAR: {
+        drvSetScrollBar(a1,self->verticalScrollBar());
+        break;
+    }
+    case _ID_BASESCROLLAREA_VIEWPORT: {
+        drvSetHandle(a1,self->viewport());
+        break;
+    }
+    default:
+        return 0;
+    }
+    return 1;
+}
+
+int drv_scrollarea(int drvid, void *a0, void* a1, void* a2, void* a3, void* a4, void* a5, void* a6)
+{
+    QScrollArea *self = (QScrollArea*)drvGetNative(a0);
+    switch (drvid) {
+    case _ID_SCROLLAREA_INIT: {
+        drvNewObj(a0,new QScrollArea());
+        break;
+    }
+    case _ID_SCROLLAREA_SETALIGNMENT: {
+        self->setAlignment(drvGetAlignment(a1));
+        break;
+    }
+    case _ID_SCROLLAREA_ALIGNMENT: {
+        drvSetAlignment(a1,self->alignment());
+        break;
+    }
+    case _ID_SCROLLAREA_SETWIDGET: {
+        self->setWidget(drvGetWidget(a1));
+        break;
+    }
+    case _ID_SCROLLAREA_WIDGET: {
+        drvSetHandle(a1,self->widget());
+        break;
+    }
+    case _ID_SCROLLAREA_SETWIDGETRESIZABLE: {
+        self->setWidgetResizable(drvGetBool(a1));
+        break;
+    }
+    case _ID_SCROLLAREA_WIDGETRESIZABLE: {
+        drvSetBool(a1,self->widgetResizable());
+        break;
+    }
+    case _ID_SCROLLAREA_TAKEWIDGET: {
+        drvSetHandle(a1,self->takeWidget());
+        break;
+    }
+    case _ID_SCROLLAREA_ENSUREVISIBLE: {
+        self->ensureVisible(drvGetInt(a1),drvGetInt(a2),drvGetInt(a3),drvGetInt(a4));
+        break;
+    }
+    case _ID_SCROLLAREA_ENSUREWIDGETVISIBLE: {
+        self->ensureWidgetVisible(drvGetWidget(a1),drvGetInt(a2),drvGetInt(a3));
+        break;
+    }
+    default:
+        return 0;
+    }
+    return 1;
+}
+
 typedef int (*DRV_CALLBACK)(void* fn, void *a1,void* a2,void* a3,void* a4);
 typedef int (*DRV_RESULT)(void* ch,int r);
 typedef int (*DRV_APPMAIN)();
@@ -3870,6 +4238,14 @@ int _drv(int drvcls, int drvid, void *a0, void* a1, void* a2, void* a3, void* a4
         return drv_listwidget(drvid,a0,a1,a2,a3,a4,a5,a6);
     case CLASSID_MAINWINDOW:
         return drv_mainwindow(drvid,a0,a1,a2,a3,a4,a5,a6);
+    case CLASSID_GLWIDGET:
+        return drv_glwidget(drvid,a0,a1,a2,a3,a4,a5,a6);
+    case CLASSID_SIZEPOLICY:
+        return drv_sizepolicy(drvid,a0,a1,a2,a3,a4,a5,a6);
+    case _CLASSID_BASESCROLLAREA:
+        return drv_basescrollarea(drvid,a0,a1,a2,a3,a4,a5,a6);
+    case CLASSID_SCROLLAREA:
+        return drv_scrollarea(drvid,a0,a1,a2,a3,a4,a5,a6);
     default:
         return 0;
     }

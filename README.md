@@ -4,6 +4,10 @@
 ##Introduction
 go-ui is a cross-platform golang ui tool kit, based on qt.
 
+Lua code that generates the wrappers (`uiobjs.go` and `cdrv.cpp`) can be found under `make`.
+
+The wrapper code is by far incomplete. Adding new functionality usually consists of editing or adding files under `make/ui`, and updating `make/make.lua` script, and making relevant changes in `ui` and `qtdrv`.
+
 ##System
 Windows / Linux / MacOS X
 

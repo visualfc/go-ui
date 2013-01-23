@@ -39,7 +39,7 @@ Accept = "accept",
 Reject = "reject",
 
 OnAccepted = [[
-QObject::connect(self,SIGNAL(acceped()),drvNewSignal(self,a1,a2),SLOT(call()));
+QObject::connect(self,SIGNAL(accepted()),drvNewSignal(self,a1,a2),SLOT(call()));
 ]],
 
 OnRejected = [[

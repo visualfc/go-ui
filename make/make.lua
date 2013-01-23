@@ -62,6 +62,11 @@ require "ui.listwidget"
 
 require "ui.mainwindow"
 
+require "ui.glwidget"
+require "ui.sizepolicy"
+require "ui.basescrollarea"
+require "ui.scrollarea"
+
 require "makelib"
 
 function make()
@@ -124,6 +129,11 @@ function make()
 		def(listwidget)
 		
 		def(mainwindow)
+		
+		def(glwidget)
+		def(sizepolicy)
+		def(basescrollarea)
+		def(scrollarea)
 		
 	end_def()
 

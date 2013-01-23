@@ -39,7 +39,9 @@ funcs = [[
 @ SetUpdatesEnabled(b bool)
 @ UpdatesEnabled() (b bool)
 @ IsActivateWindow() (b bool)
-ActivateWindow()
+@ ActivateWindow()
+@ SetSizePolicy(policy *SizePolicy)
+@ SizePolicy() (policy *SizePolicy)
 Done()
 Update()
 Repaint()
@@ -154,6 +156,8 @@ SetUpdatesEnabled = "setUpdatesEnabled",
 UpdatesEnabled = "updatesEnabled",
 IsActivateWindow = "isActiveWindow",
 ActivateWindow = "activateWindow",
+SetSizePolicy = "setSizePolicy",
+SizePolicy = "sizePolicy",
 Done = "close",
 Update = "update",
 Repaint = "repaint",

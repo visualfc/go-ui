@@ -212,6 +212,14 @@ func _p(a interface{}) uintptr {
 		return uintptr(unsafe.Pointer(&v))
 	case *BrushStyle:
 		return uintptr(unsafe.Pointer(v))
+	case AspectRatioMode:
+		return uintptr(unsafe.Pointer(&v))
+	case *AspectRatioMode:
+		return uintptr(unsafe.Pointer(v))
+	case TransformationMode:
+		return uintptr(unsafe.Pointer(&v))
+	case *TransformationMode:
+		return uintptr(unsafe.Pointer(v))
 	default:
 		warning("Warning drv, param type \"%s\" not match!", reflect.TypeOf(v))
 	}
@@ -391,6 +399,8 @@ func drv_callback(pfn unsafe.Pointer, a1, a2, a3, a4 unsafe.Pointer) int {
 		v((*PaintEvent)(a1))
 	case func(*TimerEvent):
 		v((*TimerEvent)(a1))
+	case func(int, int):
+		v(*(*int)(a1), *(*int)(a2))
 
 	default:
 		warning("Warning drv_callback, func type \"%s\" not match!", reflect.TypeOf(v))

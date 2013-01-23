@@ -188,6 +188,62 @@ const (
 	TexturePattern BrushStyle = 24
 )
 
+type TransformationMode int
+
+const (
+	FastTransformation TransformationMode = iota
+	SmoothTransformation
+)
+
+type AspectRatioMode int
+
+const (
+	IgnoreAspectRatio AspectRatioMode = iota
+	KeepAspectRatio
+	KeepAspectRatioByExpanding
+)
+
+type SizePolicyPolicyFlag int
+
+const (
+	GrowFlag   SizePolicyPolicyFlag = 1
+	ExpandFlag                      = 2
+	ShrinkFlag                      = 4
+	IgnoreFlag                      = 8
+)
+
+type SizePolicyPolicy int
+
+const (
+	Fixed            SizePolicyPolicy = 0
+	Minimum                           = SizePolicyPolicy(GrowFlag)
+	Maximum                           = SizePolicyPolicy(ShrinkFlag)
+	Preferred                         = SizePolicyPolicy(GrowFlag | ShrinkFlag)
+	Expanding                         = SizePolicyPolicy(GrowFlag | ShrinkFlag | ExpandFlag)
+	MinimumExpanding                  = SizePolicyPolicy(GrowFlag | ExpandFlag)
+	Ignored                           = SizePolicyPolicy(ShrinkFlag | GrowFlag | IgnoreFlag)
+)
+
+type SizePolicyControlType int
+
+const (
+	ControlTypeDefaultType SizePolicyControlType = 0x00000001
+	ControlTypeButtonBox                         = 0x00000002
+	ControlTypeCheckBox                          = 0x00000004
+	ControlTypeComboBox                          = 0x00000008
+	ControlTypeFrame                             = 0x00000010
+	ControlTypeGroupBox                          = 0x00000020
+	ControlTypeLabel                             = 0x00000040
+	ControlTypeLine                              = 0x00000080
+	ControlTypeLineEdit                          = 0x00000100
+	ControlTypePushButton                        = 0x00000200
+	ControlTypeRadioButton                       = 0x00000400
+	ControlTypeSlider                            = 0x00000800
+	ControlTypeSpinBox                           = 0x00001000
+	ControlTypeTabWidget                         = 0x00002000
+	ControlTypeToolButton                        = 0x00004000
+)
+
 type Point struct {
 	X, Y int
 }

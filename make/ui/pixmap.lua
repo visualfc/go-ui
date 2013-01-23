@@ -15,7 +15,15 @@ funcs = [[
 @ HasAlpha() (b bool)
 @ HasAlphaChannel() (b bool)
 @ IsNull() (b bool)
-
+@ Width() (width int)
+@ Height() (height int)
+Scaled(width int, height int, aspectRatioMode AspectRatioMode, transformMode TransformationMode) (pixmap *Pixmap)
+ScaledToHeight(height int, transformMode TransformationMode) (pixmap *Pixmap)
+ScaledToWidth(width int, transformMode TransformationMode) (pixmap *Pixmap)
+ToImage() (image *Image)
+Load(fileName string) (b bool)
+Save(fileName string, format quality int) (b bool)
+Fill(clr color.Color)
 ]]
 
 
@@ -41,12 +49,24 @@ if (pixmap.loadFromData(drvGetByteArray(a1))) {
 Close = [[
 drvDelPixmap(a0,self);
 ]],
-
 Depth = "depth",
 Size = "size",
 Rect = "rect",
 HasAlpha = "hasAlpha",
 HasAlphaChannel = "hasAlphaChannel",
 IsNull = "isNull",
-
+Width = "width",
+Height = "height",
+Scaled = "scaled",
+ScaledToHeight = "scaledToHeight",
+ScaledToWidth = "scaledToWidth",
+Scroll = "scroll",
+ToImage = "toImage",
+Load = [[
+	drvSetBool(a1, self->load(drvGetString(a0)));
+]],
+Save = [[
+	drvSetBool(a3, self->save(drvGetString(a1), 0, drvGetInt(a2)));
+]],
+Fill = "fill",
 }
