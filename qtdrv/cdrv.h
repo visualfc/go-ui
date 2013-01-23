@@ -598,15 +598,20 @@ inline void drvNewObj(void *a0, void *obj)
 template <typename T>
 inline void drvDelObj(void *a0, T *obj)
 {
-    if (a0 == 0 || obj == 0) {
+	if (obj != 0) {
+		delete obj;
+		obj = 0;
+	}
+
+    if (a0 == 0) {
         return;
     }
+    
     handle_head *head =(handle_head*)a0;
     if (head->native == 0 || head->native == drvInvalid) {
         return;
     }
     head->native = 0;
-    delete obj;
 }
 
 inline void drvDelFont(void *a0, QFont *font)
