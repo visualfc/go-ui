@@ -1,7 +1,7 @@
 #go-ui 0.1.1
 =====
 
-### !!! The project has been terminated, Please go to [GoQt](https://github.com/visualfc/goqt)
+This project is closed. 
 
 ##Introduction
 go-ui is a cross-platform golang ui tool kit, based on qt.
