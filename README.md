@@ -1,7 +1,7 @@
 #go-ui 0.1.1
 =====
 
-## This project is closed!
+## This project is closed !!!
 ## Please goto new project [GoQt](https://github.com/visualfc/goqt)
 
 ##Introduction
