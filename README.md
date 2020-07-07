@@ -4,33 +4,33 @@
 ## This project is closed !!!
 ## Please goto new project [GoQt](https://github.com/visualfc/goqt)
 
-##Introduction
+## Introduction
 go-ui is a cross-platform golang ui tool kit, based on qt.
 
-##System
+## System
 Windows / Linux / MacOS X
 
-##License
+## License
     go-ui lib BSD
     qtdrv lib LGPL
 
-##Build go-ui and examples
+## Build go-ui and examples
 
-###1.get go-ui
+### 1.get go-ui
     $ go get github.com/visualfc/go-ui
-###2.build qtdrv, need install QtSDK
+### 2.build qtdrv, need install QtSDK
     $ cd go-ui/qtdrv
     $ qmake "CONFIG+=release"
     $ make
-###3.build go-ui
+### 3.build go-ui
     $ cd go-ui/ui
     $ go install
-###4.build examples
+### 4.build examples
     $ cd go-ui/examples
     $ go build -ldflags '-r ../lib' minimal.go
     $ ./minimal
 
-##Examples
+## Examples
 
     package main
 
